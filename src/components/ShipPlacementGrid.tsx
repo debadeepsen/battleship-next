@@ -1,5 +1,5 @@
 import { COLS, ROWS, SHIP_LENGTHS, SHIP_NAMES } from '@/utils/constants'
-import React, { Fragment, useState } from 'react'
+import React, { DragEvent, Fragment, useRef, useState } from 'react'
 import ShipButton from './ShipButton'
 
 type Orientation = 'horizontal' | 'vertical'
@@ -72,21 +72,23 @@ const ShipPlacementGrid = ({
   const isStartOfShip = (coord: Coord): Ship | null =>
     placedShips.find(ship => ship.start === coord) ?? null
 
-  const handleDragStart = (length: number) => setDragLength(length)
-  const allowDrop = (e: React.DragEvent) => e.preventDefault()
+  const handleDragStart = (event: DragEvent<HTMLDivElement>, length: number) => {
+    setDragLength(length)
+  }
+  const allowDrop = (e: DragEvent) => e.preventDefault()
 
   return (
     <div className='max-w-[450px] p-4 space-y-4'>
-      {SHIP_LENGTHS.filter(
+      {/* {SHIP_LENGTHS.filter(
         l =>
           placedShips.filter(s => s.length === l).length <
           SHIP_LENGTHS.filter(s => s === l).length
       ).join(', ')}
       <hr />
-      placed: {JSON.stringify(placedShips.map(s => s.length))}
+      placed: {JSON.stringify(placedShips.map(s => s.length))} */}
       <h2 className='text-lg font-bold'>Place Your Ships</h2>
-      <div className='flex flex-col items-center gap-4 w-full'>
-        <div className='flex gap-4 items-center'>
+      <div className='flex flex-col items-start gap-4 w-full'>
+        <div className='flex gap-4 items-start'>
           <span className='font-medium'>Orientation:</span>
           <button
             onClick={() =>
@@ -104,7 +106,6 @@ const ShipPlacementGrid = ({
             <ShipButton
               key={`${length}-${index}`}
               length={length}
-              index={index}
               onDrag={handleDragStart}
             />
           ))}
