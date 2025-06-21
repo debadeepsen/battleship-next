@@ -5,6 +5,10 @@ import ShipButton from './ShipButton'
 type Orientation = 'horizontal' | 'vertical'
 type Coord = string
 type Ship = { start: Coord; orientation: Orientation; length: number }
+type ShipPlacementGridProps = {
+  onComplete: (ships: Ship[]) => void
+  onClose?: () => void
+}
 
 const toCoord = (r: number, c: number): Coord => `${ROWS[r]}${c + 1}`
 const fromCoord = (coord: string): [number, number] => [
@@ -26,11 +30,7 @@ const getShipCells = (
   }).filter((c): c is string => !!c)
 }
 
-const ShipPlacementGrid = ({
-  onComplete
-}: {
-  onComplete: (ships: Ship[]) => void
-}) => {
+const ShipPlacementGrid = ({ onComplete, onClose }: ShipPlacementGridProps) => {
   const [orientation, setOrientation] = useState<Orientation>('horizontal')
   const [placedShips, setPlacedShips] = useState<Ship[]>([])
   const [dragLength, setDragLength] = useState<number | null>(null)
@@ -72,7 +72,10 @@ const ShipPlacementGrid = ({
   const isStartOfShip = (coord: Coord): Ship | null =>
     placedShips.find(ship => ship.start === coord) ?? null
 
-  const handleDragStart = (event: DragEvent<HTMLDivElement>, length: number) => {
+  const handleDragStart = (
+    event: DragEvent<HTMLDivElement>,
+    length: number
+  ) => {
     setDragLength(length)
   }
   const allowDrop = (e: DragEvent) => e.preventDefault()
@@ -86,7 +89,10 @@ const ShipPlacementGrid = ({
       ).join(', ')}
       <hr />
       placed: {JSON.stringify(placedShips.map(s => s.length))} */}
-      <h2 className='text-lg font-bold'>Place Your Ships</h2>
+      <div className='flex justify-between items-center'>
+        <h2 className='text-lg font-bold'>Place Your Ships</h2>
+        <button onClick={() => onClose?.()}>&times;</button>
+      </div>
       <div className='flex flex-col items-start gap-4 w-full'>
         <div className='flex gap-4 items-start'>
           <span className='font-medium'>Orientation:</span>
